@@ -41,29 +41,31 @@ foreach ($domains as $domain) {
     $response = $zone->create($domain);
     if ($response->success === false) {
         message(" error. {$response->errors[0]->message}", true, false);
-        file_put_contents("zone_errors.csv", "{$domain}\t{$response->errors[0]->message}", FILE_APPEND);
+        file_put_contents("zone_errors.csv", "{$domain}\t{$response->errors[0]->message}\n", FILE_APPEND);
         continue;
     }
     $zone_id = $response->result->id;
+    $ns_1 = $response->result->name_servers[0];
+    $ns_2 = $response->result->name_servers[1];
     message(" success. Zone ID: {$zone_id}", true, false);
     message("Adding DNS records for domain '{$domain}'...", false);
     $dns = new Cloudflare\Zone\Dns($cloud);
     $response = $dns->create($zone_id, 'A', $domain, $config['server_ip']);
     if ($response->success === false) {
         message(" error. {$response->errors[0]->message}", true, false);
-        file_put_contents("dns_errors.csv", "{$domain}\tA\t{$response->errors[0]->message}", FILE_APPEND);
+        file_put_contents("dns_errors.csv", "{$domain}\tA\t{$response->errors[0]->message}\n", FILE_APPEND);
         continue;
     }
     if ($config['wildcard']) {
         $response = $dns->create($zone_id, 'A', '*', $config['server_ip']);
         if ($response->success === false) {
             message(" error. {$response->errors[0]->message}", true, false);
-            file_put_contents("dns_errors.csv", "{$domain}\twildcard\t{$response->errors[0]->message}", FILE_APPEND);
+            file_put_contents("dns_errors.csv", "{$domain}\twildcard\t{$response->errors[0]->message}\n", FILE_APPEND);
             continue;
         }
     }
     message(" success.", true, false);
-    file_put_contents("success.csv", "{$domain}\t{$zone_id}\t{$config['server_ip']}", FILE_APPEND);
+    file_put_contents("success.csv", "{$domain}\t{$zone_id}\t{$config['server_ip']}\t{$ns_1},{$ns_2}\n", FILE_APPEND);
 }
 
 message("Work done");

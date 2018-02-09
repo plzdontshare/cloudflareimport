@@ -2,8 +2,6 @@ Cloudflare Domain Import
 =
 Поможет импортировать ваши домены в Cloudflare
 
-**Важно: прежде чем вы начнете работать, у всех доменов уже должны быть прописаны NS сервера Cloudflare**
-
 Установка
 --
 Если вы знаете что такое [composer](http://getcomposer.org), то просто выполните команду:
@@ -40,6 +38,14 @@ return [
 $ php cloud.php
 ```
 
+После того, как скрипт закончит свою работу, все успешные домены будут записаны в файл `success.csv`
+
+`success.csv`
+```csv
+Имя Домена  Zone ID     Server IP   NS
+domain.com  1234qwe     127.0.0.1   bob.ns.cloudflare.com,sally.ns.cloudflare.com
+```
+
 Ошибки
 --
 Во время работы в скрипте могут возникать ошибки.
@@ -55,7 +61,7 @@ domain.com  Domain already exists
 domain2.com  Invalid domain
 ```
 
-`dns_errors.txt`
+`dns_errors.csv`
 ```csv
 Имя домена  Тип DNS Зоны    Описание ошибки
 domain.com   A               Some error
