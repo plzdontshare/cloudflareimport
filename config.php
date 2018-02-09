@@ -7,4 +7,5 @@ return [
     ],
     'wildcard'  => true,
     'server_ip' => '',
+    'proxy'     => true,
 ];

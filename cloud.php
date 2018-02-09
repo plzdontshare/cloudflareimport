@@ -50,7 +50,7 @@ foreach ($domains as $domain) {
     message(" success. Zone ID: {$zone_id}", true, false);
     message("Adding DNS records for domain '{$domain}'...", false);
     $dns = new Cloudflare\Zone\Dns($cloud);
-    $response = $dns->create($zone_id, 'A', $domain, $config['server_ip']);
+    $response = $dns->create($zone_id, 'A', $domain, $config['server_ip'], null, $config['proxy']);
     if ($response->success === false) {
         message(" error. {$response->errors[0]->message}", true, false);
         file_put_contents("dns_errors.csv", "{$domain}\tA\t{$response->errors[0]->message}\n", FILE_APPEND);
