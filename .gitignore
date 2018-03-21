@@ -1,3 +1,4 @@
 /vendor
 /*.csv
 /config.php
+/domains.txt

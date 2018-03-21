@@ -12,6 +12,13 @@ $ composer install
 
 Настройка
 --
+Создайте файл domains.txt и поместите в него домены:
+```
+site1.com
+site2.com
+site3.com
+site4.com
+```
 Все манипуляции проводятся в файле `config.php`:
 ```php
 <?php
