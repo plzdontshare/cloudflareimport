@@ -1,0 +1,12 @@
+<?php
+
+return [
+    'cloudflare' => [
+        'email' => '',
+        'key'   => '',
+    ],
+    'wildcard'             => true,
+    'server_ip'            => '',
+    'proxy'                => true,
+    'do_not_skip_existing' => true,
+];

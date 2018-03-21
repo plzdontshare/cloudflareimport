@@ -40,13 +40,35 @@ foreach ($domains as $domain) {
     $zone = new Cloudflare\Zone($cloud);
     $response = $zone->create($domain);
     if ($response->success === false) {
-        message(" error. {$response->errors[0]->message}", true, false);
-        file_put_contents("zone_errors.csv", "{$domain}\t{$response->errors[0]->message}\n", FILE_APPEND);
-        continue;
+        $error_code = $response->errors[0]->code;
+        $skip_zone = true;
+        if ($error_code == 1061 && $config['do_not_skip_existing'] === true) {
+            message(". Domain {$domain} already exists, but config allow to use existing domain.", true, false);
+            message("Fetching zone ID for {$domain}", false);
+            $skip_zone = false;
+            $zones_info = $zone->zones($domain);
+
+            if ($zones_info->result_info->total_count !== 1) {
+                message(" error. Invalid number of results: {$zones_info->result_info->total_count}", true, false);
+                $skip_zone = true;
+            } else {
+                $result = $zones_info->result[0];
+            }
+        }
+
+        if ($skip_zone) {
+            message(" error. {$response->errors[0]->message}", true, false);
+            file_put_contents("zone_errors.csv", "{$domain}\t{$response->errors[0]->message}\n", FILE_APPEND);
+            continue;
+        }
+    } else {
+        $result = $response->result;
     }
-    $zone_id = $response->result->id;
-    $ns_1 = $response->result->name_servers[0];
-    $ns_2 = $response->result->name_servers[1];
+
+    $zone_id = $result->id;
+    $ns_1 = $result->name_servers[0];
+    $ns_2 = $result->name_servers[1];
+    
     message(" success. Zone ID: {$zone_id}", true, false);
     message("Adding DNS records for domain '{$domain}'...", false);
     $dns = new Cloudflare\Zone\Dns($cloud);
