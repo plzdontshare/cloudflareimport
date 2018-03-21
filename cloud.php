@@ -1,6 +1,6 @@
 <?php
 
-define('VERSION', 'v0.1-dev');
+define('VERSION', 'v1.1');
 
 ini_set('display_errors', true);
 ini_set('max_execution_time', 0);
