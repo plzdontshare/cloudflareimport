@@ -9,4 +9,7 @@ return [
     'server_ip'            => '',
     'proxy'                => true,
     'do_not_skip_existing' => true,
+    'subdomains'           => [
+        'www',
+    ],
 ];

@@ -1,6 +1,6 @@
 <?php
 
-define('VERSION', 'v1.1.1');
+define('VERSION', 'v1.1.2');
 
 ini_set('display_errors', true);
 ini_set('max_execution_time', 0);
@@ -84,6 +84,16 @@ foreach ($domains as $domain) {
             message(" error. {$response->errors[0]->message}", true, false);
             file_put_contents("dns_errors.csv", "{$domain}\twildcard\t{$response->errors[0]->message}\n", FILE_APPEND);
             continue;
+        }
+    }
+    if (!empty($config['subdomains'])) {
+        foreach ($config['subdomains'] as $sub) {
+            $response = $dns->create($zone_id, 'A', $sub, $config['server_ip'], null, $config['proxy']);
+            if ($response->success === false) {
+                message(" error. {$response->errors[0]->message}", true, false);
+                file_put_contents("dns_errors.csv", "{$domain}\t{$sub}\t{$response->errors[0]->message}\n", FILE_APPEND);
+                continue;
+            }
         }
     }
     message(" success.", true, false);
