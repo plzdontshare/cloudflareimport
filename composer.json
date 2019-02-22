@@ -1,5 +1,11 @@
 {
     "require": {
-        "jamesryanbell/cloudflare": "^1.11.1"
+        "jamesryanbell/cloudflare": "^1.11.1",
+        "symfony/console": "^4.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "PlzDontShare\\CloudFlareImport\\": "src/"
+        }
     }
 }
