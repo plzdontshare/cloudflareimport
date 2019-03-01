@@ -234,6 +234,22 @@ class App
     }
     
     /**
+     * @param string $zone_id
+     * @param string $enabled "on" or "off"
+     *
+     * @return stdClass
+     */
+    public function setAlwaysUseHttpsEnabled($zone_id, $enabled)
+    {
+        $zone = new Zone\Settings($this->api);
+        
+        $response = $zone->change_always_use_https($zone_id, $enabled);
+        $this->checkSuccessApiResponse($response);
+        
+        return $response->result;
+    }
+    
+    /**
      * @param Domain $domain
      * @param bool $proxy
      *

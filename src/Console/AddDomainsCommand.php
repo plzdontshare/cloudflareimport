@@ -21,6 +21,7 @@ class AddDomainsCommand extends BaseCommand
         $this->addOption('skip-existing', 's', InputOption::VALUE_NONE, 'Skip existing domains');
         $this->addOption('enable-proxy', 'p', InputOption::VALUE_NONE, 'Enable CloudFlare proxy for DNS records');
         $this->addOption('enable-always-online', null, InputOption::VALUE_NONE, 'Skip disabling Always Online');
+        $this->addOption('enable-https', null, InputOption::VALUE_NONE, 'Enable "Always use HTTPS" option');
     }
     
     protected function process(InputInterface $input, OutputInterface $output)
@@ -31,6 +32,7 @@ class AddDomainsCommand extends BaseCommand
         $skip = (bool)$input->getOption('skip-existing');
         $proxy = (bool)$input->getOption('enable-proxy');
         $always_online = (bool)$input->getOption('enable-always-online');
+        $enable_https = (bool)$input->getOption('enable-https');
         
         $domains = $this->app->readDomains($domains_file);
         
@@ -62,6 +64,12 @@ class AddDomainsCommand extends BaseCommand
                 if ($always_online === false) {
                     $output->write("Disabling AlwayOnline for '{$domain->domain}' ... ");
                     $this->app->setAlwaysOnlineEnabled($domain_info['id'], "off");
+                    $output->writeln("success");
+                }
+                
+                if ($enable_https) {
+                    $output->write("Enabling \"Always use HTTPS\" option for '{$domain->domain}' ... ");
+                    $this->app->setAlwaysUseHttpsEnabled($domain_info['id'], "on");
                     $output->writeln("success");
                 }
                 
