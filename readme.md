@@ -76,6 +76,7 @@ php cloud.php show-domains --save-to my-domains.csv
 - --enable-always-online - Если указан, то скрипт не будет отключать AlwaysOnline для доменов. (по-умолчанию скрипт отключает эту настройку)
 - --enable-https - Если указан, вклчюает опцию "Always use Https" (эта опция включает автоматический редирект http -> https)
 - --ssl-mode - Изменить тип SSL который использует CloudFlare. Доступные опции: off, flexible, full, strict. 
+- --security-level - Изменить Security Level в настройках firewall. Доступные опции: essentially_off, low, medium, high, under_attack. 
 
 Если не указан параметр `--ip`, то IP должен быть указан для КАЖДОГО домена в файле с доменами (в формате `домен|ip`).
 Пример такого файла:
