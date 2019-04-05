@@ -250,6 +250,24 @@ class App
     }
     
     /**
+     * Change SSL Mode
+     *
+     * @param string $zone_id
+     * @param string $mode Values: off, flexible, full, strict
+     *
+     * @return mixed
+     */
+    public function setSSLMode($zone_id, $mode)
+    {
+        $zone = new Zone\Settings($this->api);
+    
+        $response = $zone->change_ssl($zone_id, $mode);
+        $this->checkSuccessApiResponse($response);
+    
+        return $response->result;
+    }
+    
+    /**
      * @param Domain $domain
      * @param bool $proxy
      *

@@ -74,7 +74,8 @@ php cloud.php show-domains --save-to my-domains.csv
 - --skip-existing (-s) - Если указан, то скрипт не будет пытаться добавить DNS записи для доменов которые уже добавлены в аккаунт
 - --enable-proxy (-p) - Если указан, то скрипт будет включать проксирование для добавленных DNS записей
 - --enable-always-online - Если указан, то скрипт не будет отключать AlwaysOnline для доменов. (по-умолчанию скрипт отключает эту настройку)
-- --enable-https - Если указан, вклчюает опцию "Always use Https" (эта опция включает автоматический редирект http -> https) 
+- --enable-https - Если указан, вклчюает опцию "Always use Https" (эта опция включает автоматический редирект http -> https)
+- --ssl-mode - Изменить тип SSL который использует CloudFlare. Доступные опции: off, flexible, full, strict. 
 
 Если не указан параметр `--ip`, то IP должен быть указан для КАЖДОГО домена в файле с доменами (в формате `домен|ip`).
 Пример такого файла:
@@ -96,6 +97,11 @@ php cloud.php add-domains --enable-proxy --wildcard
 
 # Кастомный файл с доменами
 php cloud.php add-domains freenom-domains.txt 
+
+# Изменяем тип SSL, устанавливаем тип Flexible
+php cloud.php add-domains --ssl-mode="flexible" --enable-https
+# SSL от CloudFlare будет отключен
+php cloud.php add-domains --ssl-mode="off"
 ``` 
 
 ### add-subdomains

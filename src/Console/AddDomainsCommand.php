@@ -22,6 +22,7 @@ class AddDomainsCommand extends BaseCommand
         $this->addOption('enable-proxy', 'p', InputOption::VALUE_NONE, 'Enable CloudFlare proxy for DNS records');
         $this->addOption('enable-always-online', null, InputOption::VALUE_NONE, 'Skip disabling Always Online');
         $this->addOption('enable-https', null, InputOption::VALUE_NONE, 'Enable "Always use HTTPS" option');
+        $this->addOption('ssl-mode', null, InputOption::VALUE_REQUIRED, 'SSL mode (off, flexible, full, strict)');
     }
     
     protected function process(InputInterface $input, OutputInterface $output)
@@ -33,6 +34,7 @@ class AddDomainsCommand extends BaseCommand
         $proxy = (bool)$input->getOption('enable-proxy');
         $always_online = (bool)$input->getOption('enable-always-online');
         $enable_https = (bool)$input->getOption('enable-https');
+        $ssl_mode = $input->getOption('ssl-mode');
         
         $domains = $this->app->readDomains($domains_file);
         
@@ -70,6 +72,12 @@ class AddDomainsCommand extends BaseCommand
                 if ($enable_https) {
                     $output->write("Enabling \"Always use HTTPS\" option for '{$domain->domain}' ... ");
                     $this->app->setAlwaysUseHttpsEnabled($domain_info['id'], "on");
+                    $output->writeln("success");
+                }
+    
+                if (!empty($ssl_mode)) {
+                    $output->writeln("Changing SSL Mode to {$ssl_mode} ... ");
+                    $this->app->setSSLMode($domain_info['id'], $ssl_mode);
                     $output->writeln("success");
                 }
                 
