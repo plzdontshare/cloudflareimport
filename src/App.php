@@ -122,7 +122,7 @@ class App
                 'nameservers' => (array)$result->name_servers,
             ];
         } catch (Exception $e) {
-            if ($skip_existing === false && $response->errors[0]->code === APIResponseCodes::DOMAIN_ALREADY_EXISTS) {
+            if ($skip_existing === true && $response->errors[0]->code === APIResponseCodes::DOMAIN_ALREADY_EXISTS) {
                 $domain_info = $this->getCFDomainInfo($domain);
             } else {
                 throw $e;
@@ -133,14 +133,14 @@ class App
     }
     
     /**
-     * @param string $domain
+     * @param Domain $domain
      *
      * @return array
      */
     public function getCFDomainInfo(Domain $domain)
     {
         $zone = new Zone($this->api);
-    
+        
         $zones_info = $zone->zones($domain->domain);
         $this->checkSuccessApiResponse($zones_info);
         $zone = $zones_info->result[0];
@@ -155,21 +155,50 @@ class App
     
     /**
      * @param string $zone_id
+     *
+     * @return mixed
+     */
+    public function getCFZoneInfo($zone_id)
+    {
+        $zone = new Zone($this->api);
+        $zone_info = $zone->zone($zone_id);
+        $this->checkSuccessApiResponse($zone_info);
+        
+        return $zone_info->result;
+    }
+    
+    /**
+     * @param string $zone_id
      * @param string $ip
      * @param string $zone_type
      * @param string $zone_name
      * @param bool $enable_proxy
+     * @param bool $skip_existing
      *
      * @return stdClass
+     * @throws Exception
      */
-    public function addDnsRecord($zone_id, $ip, $zone_type, $zone_name, $enable_proxy)
+    public function addDnsRecord($zone_id, $ip, $zone_type, $zone_name, $enable_proxy, $skip_existing)
     {
-        $dns = new Zone\Dns($this->api);
-    
-        $response = $dns->create($zone_id, $zone_type, $zone_name, $ip, null, $enable_proxy);
-        $this->checkSuccessApiResponse($response);
+        $result = null;
         
-        return $response->result;
+        try
+        {
+            $dns = new Zone\Dns($this->api);
+    
+            $response = $dns->create($zone_id, $zone_type, $zone_name, $ip, null, $enable_proxy);
+            $this->checkSuccessApiResponse($response);
+    
+            $result = $response->result;
+        } catch (Exception $e) {
+            if ($skip_existing === true && $response->errors[0]->code === APIResponseCodes::RECORD_ALREADY_EXISTS) {
+                $result = $this->getCFZoneInfo($zone_id);
+            } else {
+                throw $e;
+            }
+        }
+    
+        return $result;
     }
     
     /**
@@ -262,6 +291,16 @@ class App
         $zone = new Zone\Settings($this->api);
     
         $response = $zone->change_ssl($zone_id, $mode);
+        $this->checkSuccessApiResponse($response);
+    
+        return $response->result;
+    }
+    
+    public function setSecurityLevel($zone_id, $value)
+    {
+        $zone = new Zone\Settings($this->api);
+    
+        $response = $zone->change_security_level($zone_id, $value);
         $this->checkSuccessApiResponse($response);
     
         return $response->result;

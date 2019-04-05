@@ -23,6 +23,7 @@ class AddDomainsCommand extends BaseCommand
         $this->addOption('enable-always-online', null, InputOption::VALUE_NONE, 'Skip disabling Always Online');
         $this->addOption('enable-https', null, InputOption::VALUE_NONE, 'Enable "Always use HTTPS" option');
         $this->addOption('ssl-mode', null, InputOption::VALUE_REQUIRED, 'SSL mode (off, flexible, full, strict)');
+        $this->addOption('security-level', null, InputOption::VALUE_REQUIRED, 'Set Security Level (essentially_off, low, medium, high, under_attack)');
     }
     
     protected function process(InputInterface $input, OutputInterface $output)
@@ -35,6 +36,7 @@ class AddDomainsCommand extends BaseCommand
         $always_online = (bool)$input->getOption('enable-always-online');
         $enable_https = (bool)$input->getOption('enable-https');
         $ssl_mode = $input->getOption('ssl-mode');
+        $security_level = $input->getOption('security-level');
         
         $domains = $this->app->readDomains($domains_file);
         
@@ -54,12 +56,12 @@ class AddDomainsCommand extends BaseCommand
                 
                 $output->write("Adding 'A' DNS record for domain '{$domain->domain}' ... ");
                 $domain_ip = empty($domain->ip) ? $ip : $domain->ip;
-                $this->app->addDnsRecord($domain_info['id'], $domain_ip, 'A', $domain->domain, $proxy);
+                $this->app->addDnsRecord($domain_info['id'], $domain_ip, 'A', $domain->domain, $proxy, $skip);
                 $output->writeln('success');
                 
                 if ($wildcard) {
                     $output->write("Adding wildcard record for '{$domain->domain}' ... ");
-                    $this->app->addDnsRecord($domain_info['id'], $domain_ip, 'A', '*', false);
+                    $this->app->addDnsRecord($domain_info['id'], $domain_ip, 'A', '*', false, $skip);
                     $output->writeln('success');
                 }
                 
@@ -78,6 +80,12 @@ class AddDomainsCommand extends BaseCommand
                 if (!empty($ssl_mode)) {
                     $output->writeln("Changing SSL Mode to {$ssl_mode} ... ");
                     $this->app->setSSLMode($domain_info['id'], $ssl_mode);
+                    $output->writeln("success");
+                }
+                
+                if (!empty($security_level)) {
+                    $output->writeln("Changing Security Level to {$security_level} ... ");
+                    $this->app->setSecurityLevel($domain_info['id'], $security_level);
                     $output->writeln("success");
                 }
                 
