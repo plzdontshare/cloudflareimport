@@ -320,7 +320,7 @@ class App
         foreach ($domain->subdomains as $subdomain) {
             try
             {
-                $subdomains[] = $this->addDnsRecord($zone['id'], $domain->ip, 'A', $subdomain, $proxy);
+                $subdomains[] = $this->addDnsRecord($zone['id'], $domain->ip, 'A', $subdomain, $proxy, true);
             } catch (Exception $e) {}
         }
         
